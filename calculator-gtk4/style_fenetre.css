@@ -1,0 +1,27 @@
+*{
+ font-weight : bold;
+ padding : 2px;
+}
+
+button{
+ border-radius : 10px;
+ font-size : 20px;
+ color : gold;
+}
+
+.afficheur{
+ background : rgb(198, 195, 195);
+ color : black;
+ font-size : 32px;
+ border:  2px solid gray;
+ border-radius : 5px;
+ margin : 5px 15px 5px 10px ;
+ border-radius : 10px;
+}
+
+button:hover{
+  background : rgba(67, 59, 59, 0.693);
+  color : rgb(239, 121, 141);
+  }
+  
+
