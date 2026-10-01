@@ -18,7 +18,6 @@ typedef struct {
 
 static void load_css(void) {
     GtkCssProvider *provider = gtk_css_provider_new();
-    GError *error = NULL;
 
     const char *paths[] = {
         "style.css",
@@ -28,17 +27,13 @@ static void load_css(void) {
 
     for (int i = 0; paths[i] != NULL; i++) {
         if (g_file_test(paths[i], G_FILE_TEST_EXISTS)) {
-            gtk_css_provider_load_from_path(provider, paths[i], &error);
-            if (error == NULL) {
-                gtk_style_context_add_provider_for_display(
-                    gdk_display_get_default(),
-                    GTK_STYLE_PROVIDER(provider),
-                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
-                );
-                break;
-            }
-            g_error_free(error);
-            error = NULL;
+            gtk_css_provider_load_from_path(provider, paths[i]);
+            gtk_style_context_add_provider_for_display(
+                gdk_display_get_default(),
+                GTK_STYLE_PROVIDER(provider),
+                GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+            break;
         }
     }
 
@@ -209,6 +204,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
         .new_number = 1
     };
 
+    strcpy(state.current_input, "0");
     state.display = create_display();
     GtkWidget *buttons_grid = create_buttons_grid(&state.buttons);
 
@@ -238,7 +234,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     g_signal_connect(state.buttons.button_power, "clicked", G_CALLBACK(power_clicked), &state);
 
     gtk_window_set_child(GTK_WINDOW(window), main_box);
-    gtk_widget_show(window);
+    gtk_widget_set_visible(window, TRUE);
 }
 
 int main(int argc, char **argv) {
