@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 
 #include "disposition/buttons.h"
 #include "disposition/display.h"
@@ -95,10 +94,10 @@ static void operator_clicked(GtkButton *button, gpointer user_data) {
         double result = 0;
         switch (state->current_operator) {
             case '+': result = add(state->accumulator, value); break;
-            case '−': result = subtract(state->accumulator, value); break;
-            case '×': result = multiply(state->accumulator, value); break;
-            case '÷': result = divide(state->accumulator, value); break;
-            default: result = value;
+            case '-': result = subtract(state->accumulator, value); break;
+            case '*': result = multiply(state->accumulator, value); break;
+            case '/': result = divide(state->accumulator, value); break;
+            default: result = value; break;
         }
         snprintf(state->current_input, sizeof(state->current_input), "%.10g", result);
     }
@@ -118,10 +117,10 @@ static void equals_clicked(GtkButton *button, gpointer user_data) {
     if (state->current_operator != '\0') {
         switch (state->current_operator) {
             case '+': result = add(state->accumulator, value); break;
-            case '−': result = subtract(state->accumulator, value); break;
-            case '×': result = multiply(state->accumulator, value); break;
-            case '÷': result = divide(state->accumulator, value); break;
-            default: result = value;
+            case '-': result = subtract(state->accumulator, value); break;
+            case '*': result = multiply(state->accumulator, value); break;
+            case '/': result = divide(state->accumulator, value); break;
+            default: result = value; break;
         }
         snprintf(state->current_input, sizeof(state->current_input), "%.10g", result);
         state->accumulator = result;
@@ -144,12 +143,14 @@ static void clear_clicked(GtkButton *button, gpointer user_data) {
 static void delete_clicked(GtkButton *button, gpointer user_data) {
     (void)button;
     CalculatorState *state = (CalculatorState *)user_data;
+
     if (strlen(state->current_input) > 1) {
         state->current_input[strlen(state->current_input) - 1] = '\0';
     } else {
         strcpy(state->current_input, "0");
         state->new_number = 1;
     }
+
     update_display(state);
 }
 
@@ -164,15 +165,37 @@ static void sqrt_clicked(GtkButton *button, gpointer user_data) {
     update_display(state);
 }
 
+static void percent_clicked(GtkButton *button, gpointer user_data) {
+    (void)button;
+    CalculatorState *state = (CalculatorState *)user_data;
+    double value = atof(state->current_input);
+    double result = percentage(state->accumulator, value);
+    snprintf(state->current_input, sizeof(state->current_input), "%.10g", result);
+    state->accumulator = result;
+    state->new_number = 1;
+    update_display(state);
+}
+
+static void power_clicked(GtkButton *button, gpointer user_data) {
+    (void)button;
+    CalculatorState *state = (CalculatorState *)user_data;
+    double value = atof(state->current_input);
+    double result = power(state->accumulator, value);
+    snprintf(state->current_input, sizeof(state->current_input), "%.10g", result);
+    state->accumulator = result;
+    state->new_number = 1;
+    update_display(state);
+}
+
 static void activate(GtkApplication *app, gpointer user_data) {
     (void)user_data;
 
     GtkWidget *window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "Calculatrice GTK4");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 500);
+    gtk_window_set_default_size(GTK_WINDOW(window), 420, 560);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
-    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
+    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
     gtk_widget_set_margin_start(main_box, 15);
     gtk_widget_set_margin_end(main_box, 15);
     gtk_widget_set_margin_top(main_box, 15);
@@ -181,11 +204,10 @@ static void activate(GtkApplication *app, gpointer user_data) {
     CalculatorState state = {
         .display = NULL,
         .current_input = "0",
-        .accumulator = 0,
+        .accumulator = 0.0,
         .current_operator = '\0',
         .new_number = 1
     };
-    strcpy(state.current_input, "0");
 
     state.display = create_display();
     GtkWidget *buttons_grid = create_buttons_grid(&state.buttons);
@@ -212,6 +234,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
     g_signal_connect(state.buttons.button_clear, "clicked", G_CALLBACK(clear_clicked), &state);
     g_signal_connect(state.buttons.button_delete, "clicked", G_CALLBACK(delete_clicked), &state);
     g_signal_connect(state.buttons.button_sqrt, "clicked", G_CALLBACK(sqrt_clicked), &state);
+    g_signal_connect(state.buttons.button_percent, "clicked", G_CALLBACK(percent_clicked), &state);
+    g_signal_connect(state.buttons.button_power, "clicked", G_CALLBACK(power_clicked), &state);
 
     gtk_window_set_child(GTK_WINDOW(window), main_box);
     gtk_widget_show(window);

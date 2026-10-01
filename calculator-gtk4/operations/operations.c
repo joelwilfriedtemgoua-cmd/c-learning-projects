@@ -14,14 +14,14 @@ double multiply(double a, double b) {
 }
 
 double divide(double a, double b) {
-    if (b == 0) {
+    if (b == 0.0) {
         return 0.0;
     }
     return a / b;
 }
 
 double modulo(double a, double b) {
-    if (b == 0) {
+    if (b == 0.0) {
         return 0.0;
     }
     return fmod(a, b);
@@ -32,14 +32,14 @@ double power(double a, double b) {
 }
 
 double square_root(double a) {
-    if (a < 0) {
+    if (a < 0.0) {
         return 0.0;
     }
     return sqrt(a);
 }
 
 double percentage(double a, double b) {
-    if (b == 0) {
+    if (b == 0.0) {
         return 0.0;
     }
     return (a * b) / 100.0;
