@@ -32,7 +32,7 @@ void load_tasks() {
         task_count++;
     }
 
-    fclose();
+    fclose(file);
     printf("✓ %d tâche(s) chargée(s)\n\n", task_count);
 }
 
@@ -47,7 +47,7 @@ void save_tasks() {
         fprintf(file, "%d|%s\n", tasks[i].done, tasks[i].description);
     }
 
-    fclose();
+    fclose(file);
     printf("💾 Sauvegardé !\n\n");
 }
 
@@ -89,9 +89,9 @@ void list_tasks() {
     printf("╚════════════════════════════════════╝\n\n");
 
     for (int i = 0; i < task_count; i++) {
-        char checkbox = tasks[i].done ? '✓' : '☐';
+        char *checkbox = tasks[i].done ? "[X]" : "[ ]";
         char *status = tasks[i].done ? " (FAIT)" : "";
-        printf("%2d. [%c] %s%s\n", i + 1, checkbox, tasks[i].description, status);
+        printf("%2d. %s %s%s\n", i + 1, checkbox, tasks[i].description, status);
     }
 
     printf("\n");
@@ -164,7 +164,7 @@ void show_stats() {
     printf("╠════════════════════════════════════╣\n");
     printf("║ Total      : %2d tâches             ║\n", task_count);
     printf("║ Complétées : %2d tâches      ✓      ║\n", completed);
-    printf("║ Restantes  : %2d tâches      ☐      ║\n", remaining);
+    printf("║ Restantes  : %2d tâches      [ ]    ║\n", remaining);
     printf("║ Progression: %3d%%                  ║\n", percentage);
     printf("╚════════════════════════════════════╝\n\n");
 }
